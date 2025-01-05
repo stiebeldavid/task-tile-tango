@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DragHandle, Tag } from "lucide-react";
+import { GripVertical, Tag } from "lucide-react";
 import { Draggable } from "@hello-pangea/dnd";
 
 interface Task {
@@ -32,7 +32,7 @@ export const ProjectCard = ({ id, index, title, description, tags, tasks, onTask
           <Card className="h-full">
             <CardHeader className="flex flex-row items-center space-x-4">
               <div {...provided.dragHandleProps} className="cursor-grab">
-                <DragHandle className="h-5 w-5 text-muted-foreground" />
+                <GripVertical className="h-5 w-5 text-muted-foreground" />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold">{title}</h3>
