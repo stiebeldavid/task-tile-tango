@@ -28,7 +28,22 @@ export type Database = {
           project_id?: number | null
           tag_id?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_project_tags_project"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_project_tags_tag"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       projects: {
         Row: {
@@ -106,7 +121,15 @@ export type Database = {
           project_id?: number | null
           update_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_tasks_project"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
