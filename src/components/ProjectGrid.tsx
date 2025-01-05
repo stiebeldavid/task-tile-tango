@@ -17,9 +17,21 @@ interface ProjectGridProps {
   projects: Project[];
   onDragEnd: (result: any) => void;
   onTaskToggle: (projectId: string, taskId: string) => void;
+  onProjectEdit?: (id: string, title: string) => void;
+  onTaskAdd?: (projectId: string, content: string) => void;
+  onTaskEdit?: (projectId: string, taskId: string, content: string) => void;
+  onProjectDelete?: (id: string) => void;
 }
 
-export const ProjectGrid = ({ projects, onDragEnd, onTaskToggle }: ProjectGridProps) => {
+export const ProjectGrid = ({ 
+  projects, 
+  onDragEnd, 
+  onTaskToggle,
+  onProjectEdit,
+  onTaskAdd,
+  onTaskEdit,
+  onProjectDelete
+}: ProjectGridProps) => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="projects" direction="horizontal">
@@ -39,6 +51,10 @@ export const ProjectGrid = ({ projects, onDragEnd, onTaskToggle }: ProjectGridPr
                 tags={project.tags}
                 tasks={project.tasks}
                 onTaskToggle={(taskId) => onTaskToggle(project.id, taskId)}
+                onProjectEdit={onProjectEdit}
+                onTaskAdd={onTaskAdd}
+                onTaskEdit={onTaskEdit}
+                onProjectDelete={onProjectDelete}
               />
             ))}
             {provided.placeholder}
