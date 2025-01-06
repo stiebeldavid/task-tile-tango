@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Timer, X } from "lucide-react";
+import { Timer, X, Rocket } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTasks } from "@/hooks/useTasks";
 
@@ -118,29 +118,42 @@ const DeepWork = () => {
           </CardHeader>
         </Card>
 
-        {relevantProjects.map((project) => (
-          <Card key={project.id} className="border-primary/10">
-            <CardHeader>
-              <h2 className="text-lg font-semibold text-primary/80">{project.title}</h2>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {project.tasks
-                .filter((task) => sessionData.selectedTasks.includes(task.id))
-                .map((task) => (
-                  <div key={task.id} className="flex items-center space-x-3">
-                    <Checkbox
-                      checked={task.completed}
-                      onCheckedChange={() => handleTaskToggle(task.id)}
-                      className="border-primary/50 data-[state=checked]:bg-primary/50"
-                    />
-                    <span className={task.completed ? "line-through text-muted-foreground" : ""}>
-                      {task.content}
-                    </span>
+        <div className="relative">
+          <div className="absolute -top-3 -right-2 rotate-6 z-10">
+            <div className="bg-primary text-primary-foreground px-4 py-1 rounded-full font-bold shadow-lg flex items-center gap-2">
+              <Rocket className="h-4 w-4" />
+              Let's Go!
+            </div>
+          </div>
+          
+          <Card className="border-primary/10">
+            <CardContent className="p-6 space-y-8">
+              {relevantProjects.map((project) => (
+                <div key={project.id} className="space-y-4">
+                  <h2 className="text-lg font-semibold text-primary/80 border-b border-primary/10 pb-2">
+                    {project.title}
+                  </h2>
+                  <div className="space-y-4 pl-4">
+                    {project.tasks
+                      .filter((task) => sessionData.selectedTasks.includes(task.id))
+                      .map((task) => (
+                        <div key={task.id} className="flex items-center space-x-3">
+                          <Checkbox
+                            checked={task.completed}
+                            onCheckedChange={() => handleTaskToggle(task.id)}
+                            className="border-primary/50 data-[state=checked]:bg-primary/50"
+                          />
+                          <span className={task.completed ? "line-through text-muted-foreground" : ""}>
+                            {task.content}
+                          </span>
+                        </div>
+                      ))}
                   </div>
-                ))}
+                </div>
+              ))}
             </CardContent>
           </Card>
-        ))}
+        </div>
 
         <Button
           onClick={endSession}
