@@ -61,18 +61,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <ProjectHeader onSignOut={handleSignOut} />
-      <main className="container mx-auto">
-        <div className="fixed bottom-8 right-8 z-20">
-          <Button
-            size="lg"
-            onClick={() => setIsDeepWorkModalOpen(true)}
-            className="bg-primary/20 hover:bg-primary/40 text-primary-foreground shadow-lg hover:shadow-xl transition-all group"
-          >
-            <Play className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-            Start Deep Work
-          </Button>
-        </div>
-        
+      <main className="container mx-auto pb-24"> {/* Added padding bottom to prevent button overlap */}
         {projects.length === 0 ? (
           <div className="p-6">
             <EmptyProjectsCard onAddProject={() => setIsAddingProject(true)} />
@@ -103,6 +92,17 @@ const Index = () => {
             onAddProjectClick={() => setIsAddingProject(true)}
           />
         )}
+
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+          <Button
+            size="lg"
+            onClick={() => setIsDeepWorkModalOpen(true)}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all group px-8 py-6"
+          >
+            <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+            Start Deep Work
+          </Button>
+        </div>
 
         <DeepWorkModal
           isOpen={isDeepWorkModalOpen}
