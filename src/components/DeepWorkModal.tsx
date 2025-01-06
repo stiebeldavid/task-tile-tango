@@ -4,7 +4,13 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Play, Clock, ChevronRight } from "lucide-react";
+import { Play, ChevronRight } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface Task {
   id: string;
@@ -26,7 +32,6 @@ interface DeepWorkModalProps {
 
 export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps) => {
   const [step, setStep] = useState<'project' | 'duration'>('project');
-  const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [duration, setDuration] = useState<string | null>(null);
 
@@ -43,12 +48,11 @@ export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps)
   };
 
   const handleNext = () => {
-    if (step === 'project' && selectedProject && selectedTasks.length > 0) {
+    if (step === 'project' && selectedTasks.length > 0) {
       setStep('duration');
     } else if (step === 'duration' && duration) {
       // Here you would handle starting the deep work session
       console.log('Starting deep work session:', {
-        projectId: selectedProject,
         taskIds: selectedTasks,
         duration
       });
@@ -59,7 +63,6 @@ export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps)
 
   const resetModal = () => {
     setStep('project');
-    setSelectedProject(null);
     setSelectedTasks([]);
     setDuration(null);
   };
@@ -84,54 +87,49 @@ export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps)
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {step === 'project' ? 'Select Project & Tasks' : 'Set Duration'}
+            {step === 'project' ? 'Select Tasks' : 'Set Duration'}
           </DialogTitle>
         </DialogHeader>
 
         {step === 'project' ? (
           <div className="space-y-4">
-            <div className="space-y-4">
+            <Accordion type="multiple" className="w-full">
               {projects.map(project => (
-                <div
-                  key={project.id}
-                  className={`p-4 rounded-lg border transition-colors cursor-pointer ${
-                    selectedProject === project.id
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border/50 hover:border-primary/50'
-                  }`}
-                  onClick={() => setSelectedProject(project.id)}
-                >
-                  <h3 className="font-medium mb-2">{project.title}</h3>
-                  <div className="space-y-2">
-                    {project.tasks
-                      .filter(task => !task.completed)
-                      .map(task => (
-                        <div
-                          key={task.id}
-                          className="flex items-center space-x-2"
-                          onClick={e => e.stopPropagation()}
-                        >
-                          <Checkbox
-                            id={task.id}
-                            checked={selectedTasks.includes(task.id)}
-                            onCheckedChange={() => handleTaskToggle(task.id)}
-                            disabled={
-                              !selectedTasks.includes(task.id) &&
-                              selectedTasks.length >= 3
-                            }
-                          />
-                          <label
-                            htmlFor={task.id}
-                            className="text-sm cursor-pointer"
+                <AccordionItem value={project.id} key={project.id}>
+                  <AccordionTrigger className="text-sm hover:no-underline">
+                    {project.title}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-2 pt-2">
+                      {project.tasks
+                        .filter(task => !task.completed)
+                        .map(task => (
+                          <div
+                            key={task.id}
+                            className="flex items-center space-x-2"
                           >
-                            {task.content}
-                          </label>
-                        </div>
-                      ))}
-                  </div>
-                </div>
+                            <Checkbox
+                              id={task.id}
+                              checked={selectedTasks.includes(task.id)}
+                              onCheckedChange={() => handleTaskToggle(task.id)}
+                              disabled={
+                                !selectedTasks.includes(task.id) &&
+                                selectedTasks.length >= 3
+                              }
+                            />
+                            <label
+                              htmlFor={task.id}
+                              className="text-sm cursor-pointer"
+                            >
+                              {task.content}
+                            </label>
+                          </div>
+                        ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
               ))}
-            </div>
+            </Accordion>
           </div>
         ) : (
           <RadioGroup
@@ -149,27 +147,25 @@ export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps)
         )}
 
         <div className="flex justify-end mt-4">
-          <Button
-            onClick={handleNext}
-            disabled={
-              (step === 'project' &&
-                (!selectedProject || selectedTasks.length === 0)) ||
-              (step === 'duration' && !duration)
-            }
-            className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
-          >
-            {step === 'project' ? (
-              <>
-                Next
-                <ChevronRight className="ml-2 h-4 w-4" />
-              </>
-            ) : (
-              <>
-                Start
-                <Play className="ml-2 h-4 w-4" />
-              </>
-            )}
-          </Button>
+          {(selectedTasks.length > 0 || step === 'duration') && (
+            <Button
+              onClick={handleNext}
+              disabled={step === 'duration' && !duration}
+              className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
+            >
+              {step === 'project' ? (
+                <>
+                  Next
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </>
+              ) : (
+                <>
+                  Start
+                  <Play className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>
