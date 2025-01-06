@@ -47,22 +47,24 @@
   }
 }
 
-/* Glass effect for cards */
-.glass-card {
-  @apply bg-card/80 backdrop-blur-sm border border-white/10;
-}
+@layer components {
+  /* Glass effect for cards */
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-sm border border-white/10;
+  }
 
-/* Gradient animations */
-.gradient-border {
-  @apply relative rounded-lg p-[1px] bg-gradient-to-r from-primary/50 to-accent/50 hover:from-primary hover:to-accent transition-all duration-300;
-}
+  /* Gradient animations */
+  .gradient-border {
+    @apply relative rounded-lg p-[1px] bg-gradient-to-r from-primary/50 to-accent/50 hover:from-primary hover:to-accent transition-all duration-300;
+  }
 
-/* Hover effects */
-.hover-scale {
-  @apply transition-transform duration-200 hover:scale-[1.02];
-}
+  /* Hover effects */
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-[1.02];
+  }
 
-/* Fade in animation */
-.fade-in {
-  @apply animate-fade-in;
+  /* Fade in animation */
+  .fade-in {
+    @apply animate-fade-in;
+  }
 }
