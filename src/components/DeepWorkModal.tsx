@@ -130,43 +130,45 @@ export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps)
                 </AccordionItem>
               ))}
             </Accordion>
+
+            <div className="flex justify-end mt-4">
+              <Button
+                onClick={handleNext}
+                disabled={selectedTasks.length === 0}
+                className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
+              >
+                Next
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
           </div>
         ) : (
-          <RadioGroup
-            value={duration}
-            onValueChange={setDuration}
-            className="grid gap-4"
-          >
-            {durations.map(({ value, label }) => (
-              <div key={value} className="flex items-center space-x-2">
-                <RadioGroupItem value={value} id={`duration-${value}`} />
-                <Label htmlFor={`duration-${value}`}>{label}</Label>
-              </div>
-            ))}
-          </RadioGroup>
-        )}
-
-        <div className="flex justify-end mt-4">
-          {(selectedTasks.length > 0 || step === 'duration') && (
-            <Button
-              onClick={handleNext}
-              disabled={step === 'duration' && !duration}
-              className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
+          <>
+            <RadioGroup
+              value={duration}
+              onValueChange={setDuration}
+              className="grid gap-4"
             >
-              {step === 'project' ? (
-                <>
-                  Next
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </>
-              ) : (
-                <>
-                  Start
-                  <Play className="ml-2 h-4 w-4" />
-                </>
-              )}
-            </Button>
-          )}
-        </div>
+              {durations.map(({ value, label }) => (
+                <div key={value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={value} id={`duration-${value}`} />
+                  <Label htmlFor={`duration-${value}`}>{label}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+
+            <div className="flex justify-end mt-4">
+              <Button
+                onClick={handleNext}
+                disabled={!duration}
+                className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
+              >
+                Start
+                <Play className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
