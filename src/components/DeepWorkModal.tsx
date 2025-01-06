@@ -144,18 +144,21 @@ export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps)
           </div>
         ) : (
           <>
-            <RadioGroup
-              value={duration}
-              onValueChange={setDuration}
-              className="grid gap-4"
-            >
+            <div className="grid grid-cols-2 gap-3">
               {durations.map(({ value, label }) => (
-                <div key={value} className="flex items-center space-x-2">
-                  <RadioGroupItem value={value} id={`duration-${value}`} />
-                  <Label htmlFor={`duration-${value}`}>{label}</Label>
-                </div>
+                <button
+                  key={value}
+                  onClick={() => setDuration(value)}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    duration === value
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <div className="text-sm font-medium">{label}</div>
+                </button>
               ))}
-            </RadioGroup>
+            </div>
 
             <div className="flex justify-end mt-4">
               <Button
