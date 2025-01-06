@@ -5,15 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Play, ChevronRight } from "lucide-react";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -43,7 +34,6 @@ export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps)
   const [step, setStep] = useState<'project' | 'duration'>('project');
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [duration, setDuration] = useState<string | null>(null);
-  const [showPreparationModal, setShowPreparationModal] = useState(false);
 
   const handleTaskToggle = (taskId: string) => {
     setSelectedTasks(prev => {
@@ -61,28 +51,22 @@ export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps)
     if (step === 'project' && selectedTasks.length > 0) {
       setStep('duration');
     } else if (step === 'duration' && duration) {
-      setShowPreparationModal(true);
+      onClose();
+      navigate("/deep-work", {
+        state: {
+          selectedTasks,
+          duration: parseInt(duration),
+          projects
+        }
+      });
+      resetModal();
     }
-  };
-
-  const startDeepWork = () => {
-    setShowPreparationModal(false);
-    onClose();
-    navigate("/deep-work", {
-      state: {
-        selectedTasks,
-        duration: parseInt(duration!),
-        projects
-      }
-    });
-    resetModal();
   };
 
   const resetModal = () => {
     setStep('project');
     setSelectedTasks([]);
     setDuration(null);
-    setShowPreparationModal(false);
   };
 
   const handleClose = () => {
@@ -104,122 +88,96 @@ export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps)
   const defaultExpandedValue = projects.length > 0 ? [projects[0].id] : [];
 
   return (
-    <>
-      <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {step === 'project' ? 'Select Tasks for Deep Work Session' : 'Set Duration for Deep Work'}
-            </DialogTitle>
-          </DialogHeader>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>
+            {step === 'project' ? 'Select Tasks for Deep Work Session' : 'Set Duration for Deep Work'}
+          </DialogTitle>
+        </DialogHeader>
 
-          {step === 'project' ? (
-            <div className="space-y-4">
-              <Accordion type="multiple" defaultValue={defaultExpandedValue} className="w-full">
-                {projects.map(project => (
-                  <AccordionItem value={project.id} key={project.id}>
-                    <AccordionTrigger className="text-sm hover:no-underline flex flex-row-reverse justify-end gap-2">
-                      {project.title}
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-2 pt-2">
-                        {project.tasks
-                          .filter(task => !task.completed)
-                          .map(task => (
-                            <div
-                              key={task.id}
-                              className="flex items-center space-x-2"
+        {step === 'project' ? (
+          <div className="space-y-4">
+            <Accordion type="multiple" defaultValue={defaultExpandedValue} className="w-full">
+              {projects.map(project => (
+                <AccordionItem value={project.id} key={project.id}>
+                  <AccordionTrigger className="text-sm hover:no-underline flex flex-row-reverse justify-end gap-2">
+                    {project.title}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-2 pt-2">
+                      {project.tasks
+                        .filter(task => !task.completed)
+                        .map(task => (
+                          <div
+                            key={task.id}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              id={task.id}
+                              checked={selectedTasks.includes(task.id)}
+                              onCheckedChange={() => handleTaskToggle(task.id)}
+                              disabled={
+                                !selectedTasks.includes(task.id) &&
+                                selectedTasks.length >= 3
+                              }
+                            />
+                            <label
+                              htmlFor={task.id}
+                              className="text-sm cursor-pointer"
                             >
-                              <Checkbox
-                                id={task.id}
-                                checked={selectedTasks.includes(task.id)}
-                                onCheckedChange={() => handleTaskToggle(task.id)}
-                                disabled={
-                                  !selectedTasks.includes(task.id) &&
-                                  selectedTasks.length >= 3
-                                }
-                              />
-                              <label
-                                htmlFor={task.id}
-                                className="text-sm cursor-pointer"
-                              >
-                                {task.content}
-                              </label>
-                            </div>
-                          ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+                              {task.content}
+                            </label>
+                          </div>
+                        ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
 
-              <div className="flex justify-end mt-4">
-                <Button
-                  onClick={handleNext}
-                  disabled={selectedTasks.length === 0}
-                  className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
-                >
-                  Next
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
+            <div className="flex justify-end mt-4">
+              <Button
+                onClick={handleNext}
+                disabled={selectedTasks.length === 0}
+                className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
+              >
+                Next
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
             </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 gap-3">
-                {durations.map(({ value, label }) => (
-                  <button
-                    key={value}
-                    onClick={() => setDuration(value)}
-                    className={`p-4 rounded-lg border-2 transition-all ${
-                      duration === value
-                        ? 'border-primary bg-primary/10 text-primary'
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                  >
-                    <div className="text-sm font-medium">{label}</div>
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex justify-end mt-4">
-                <Button
-                  onClick={handleNext}
-                  disabled={!duration}
-                  className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              {durations.map(({ value, label }) => (
+                <button
+                  key={value}
+                  onClick={() => setDuration(value)}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    duration === value
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border hover:border-primary/50'
+                  }`}
                 >
-                  Start
-                  <Play className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+                  <div className="text-sm font-medium">{label}</div>
+                </button>
+              ))}
+            </div>
 
-      <AlertDialog open={showPreparationModal} onOpenChange={setShowPreparationModal}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Prepare for Deep Work</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-4">
-              <p>Before starting your deep work session, take a moment to:</p>
-              <ul className="list-disc pl-6 space-y-2">
-                <li>Turn off notifications on your devices</li>
-                <li>Close distracting applications (email, chat, social media)</li>
-                <li>Clear your desk of unnecessary items</li>
-                <li>Have water or other refreshments ready</li>
-                <li>Use the bathroom if needed</li>
-                <li>Take a few deep breaths to center yourself</li>
-              </ul>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={startDeepWork} className="bg-primary text-primary-foreground">
-              I'm Ready
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+            <div className="flex justify-end mt-4">
+              <Button
+                onClick={handleNext}
+                disabled={!duration}
+                className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
+              >
+                Start
+                <Play className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
