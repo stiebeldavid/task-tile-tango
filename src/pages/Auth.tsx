@@ -56,7 +56,11 @@ const AuthPage = () => {
           theme="light"
           providers={[]}
           view={view}
-          viewChange={({ view }) => setView(view as "sign_in" | "sign_up")}
+          onViewChange={({ view }) => {
+            if (view === 'sign_in' || view === 'sign_up') {
+              setView(view);
+            }
+          }}
         />
       </div>
     </div>
