@@ -53,7 +53,6 @@ export type Database = {
           position: number | null
           title: string | null
           updated_at: string | null
-          user_id: number | null
           User_UID: string
         }
         Insert: {
@@ -63,7 +62,6 @@ export type Database = {
           position?: number | null
           title?: string | null
           updated_at?: string | null
-          user_id?: number | null
           User_UID: string
         }
         Update: {
@@ -73,7 +71,6 @@ export type Database = {
           position?: number | null
           title?: string | null
           updated_at?: string | null
-          user_id?: number | null
           User_UID?: string
         }
         Relationships: []
