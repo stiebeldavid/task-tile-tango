@@ -1,8 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Play, ChevronRight } from "lucide-react";
 import {
@@ -31,6 +30,7 @@ interface DeepWorkModalProps {
 }
 
 export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState<'project' | 'duration'>('project');
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [duration, setDuration] = useState<string | null>(null);
@@ -51,12 +51,14 @@ export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps)
     if (step === 'project' && selectedTasks.length > 0) {
       setStep('duration');
     } else if (step === 'duration' && duration) {
-      // Here you would handle starting the deep work session
-      console.log('Starting deep work session:', {
-        taskIds: selectedTasks,
-        duration
-      });
       onClose();
+      navigate("/deep-work", {
+        state: {
+          selectedTasks,
+          duration: parseInt(duration),
+          projects
+        }
+      });
       resetModal();
     }
   };
