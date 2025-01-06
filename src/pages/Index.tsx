@@ -7,6 +7,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ProjectHeader } from "@/components/ProjectHeader";
 import { EmptyProjectsCard } from "@/components/EmptyProjectsCard";
 import { useProjects } from "@/hooks/useProjects";
+import { DeepWorkModal } from "@/components/DeepWorkModal";
+import { Button } from "@/components/ui/button";
+import { Play } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -14,6 +17,7 @@ const Index = () => {
   const queryClient = useQueryClient();
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [newProjectTitle, setNewProjectTitle] = useState("");
+  const [isDeepWorkModalOpen, setIsDeepWorkModalOpen] = useState(false);
   
   const { projects, isLoading, createProject, updateProject, deleteProject } = useProjects();
 
@@ -143,6 +147,17 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <ProjectHeader onSignOut={handleSignOut} />
       <main className="container mx-auto">
+        <div className="fixed bottom-8 right-8 z-20">
+          <Button
+            size="lg"
+            onClick={() => setIsDeepWorkModalOpen(true)}
+            className="bg-primary/20 hover:bg-primary/40 text-primary-foreground shadow-lg hover:shadow-xl transition-all group"
+          >
+            <Play className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+            Start Deep Work
+          </Button>
+        </div>
+        
         {projects.length === 0 ? (
           <div className="p-6">
             <EmptyProjectsCard onAddProject={() => setIsAddingProject(true)} />
@@ -163,6 +178,12 @@ const Index = () => {
             onAddProjectClick={() => setIsAddingProject(true)}
           />
         )}
+
+        <DeepWorkModal
+          isOpen={isDeepWorkModalOpen}
+          onClose={() => setIsDeepWorkModalOpen(false)}
+          projects={projects}
+        />
       </main>
     </div>
   );
