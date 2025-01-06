@@ -73,16 +73,15 @@ const Index = () => {
 
   const updateProjectPositionMutation = useMutation({
     mutationFn: async (updatedProjects: any[]) => {
-      const updates = updatedProjects.map((project, index) => ({
-        id: parseInt(project.id),
-        position: index,
-      }));
+      // Update each project's position individually
+      const updatePromises = updatedProjects.map((project, index) => 
+        supabase
+          .from('projects')
+          .update({ position: index })
+          .eq('id', parseInt(project.id))
+      );
 
-      const { error } = await supabase
-        .from('projects')
-        .upsert(updates, { onConflict: 'id' });
-
-      if (error) throw error;
+      await Promise.all(updatePromises);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
