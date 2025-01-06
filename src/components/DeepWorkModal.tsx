@@ -84,6 +84,9 @@ export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps)
     { value: '240', label: '4 hours' },
   ];
 
+  // Get the first project's ID for default expansion
+  const defaultExpandedValue = projects.length > 0 ? [projects[0].id] : [];
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
@@ -95,10 +98,10 @@ export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps)
 
         {step === 'project' ? (
           <div className="space-y-4">
-            <Accordion type="multiple" className="w-full">
+            <Accordion type="multiple" defaultValue={defaultExpandedValue} className="w-full">
               {projects.map(project => (
                 <AccordionItem value={project.id} key={project.id}>
-                  <AccordionTrigger className="text-sm hover:no-underline">
+                  <AccordionTrigger className="text-sm hover:no-underline flex flex-row-reverse justify-end gap-2">
                     {project.title}
                   </AccordionTrigger>
                   <AccordionContent>
