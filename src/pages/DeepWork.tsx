@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Timer, X, Rocket } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTasks } from "@/hooks/useTasks";
+import { Progress } from "@/components/ui/progress";
 
 interface Task {
   id: string;
@@ -43,13 +44,14 @@ const DeepWork = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { updateTask } = useTasks();
-  const [timeLeft, setTimeLeft] = useState(0);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isActive, setIsActive] = useState(true);
   const [sessionData, setSessionData] = useState<DeepWorkState | null>(null);
+  const [startTime] = useState(Date.now());
 
   useEffect(() => {
     const state = location.state as DeepWorkState;
-    if (!state) {
+    if (!state || !state.duration || !state.selectedTasks || !state.projects) {
       navigate("/");
       return;
     }
@@ -58,11 +60,11 @@ const DeepWork = () => {
   }, [location.state, navigate]);
 
   useEffect(() => {
-    if (!isActive || timeLeft <= 0) return;
+    if (!isActive || timeLeft === null || timeLeft <= 0) return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev <= 1) {
+        if (prev === null || prev <= 1) {
           clearInterval(timer);
           setIsActive(false);
           toast({
@@ -95,8 +97,9 @@ const DeepWork = () => {
     navigate("/");
   };
 
-  if (!sessionData) return null;
+  if (!sessionData || timeLeft === null) return null;
 
+  const progress = ((sessionData.duration * 60 - timeLeft) / (sessionData.duration * 60)) * 100;
   const relevantProjects = sessionData.projects.filter(project =>
     project.tasks.some(task => sessionData.selectedTasks.includes(task.id))
   );
@@ -116,6 +119,9 @@ const DeepWork = () => {
               {formatTime(timeLeft)}
             </div>
           </CardHeader>
+          <CardContent>
+            <Progress value={progress} className="h-2" />
+          </CardContent>
         </Card>
 
         <div className="relative">
