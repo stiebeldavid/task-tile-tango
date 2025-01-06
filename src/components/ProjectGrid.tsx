@@ -71,10 +71,10 @@ export const ProjectGrid = ({
           ) : (
             <Button 
               onClick={onAddProjectClick}
-              className="bg-primary/20 hover:bg-primary/40 text-primary-foreground group"
+              className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
             >
               <Plus className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-              {isMobile ? "New" : "New Project"}
+              New Project
             </Button>
           )}
         </div>
