@@ -4,27 +4,36 @@
  
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
+    --background: 225 25% 12%;
+    --foreground: 210 40% 98%;
+    
+    --card: 225 25% 14%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 225 25% 14%;
+    --popover-foreground: 210 40% 98%;
+    
+    --primary: 252 83% 74%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 217.2 91.2% 59.8%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
+    
+    --secondary: 225 25% 26%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 225 25% 26%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    
+    --accent: 252 83% 74%;
+    --accent-foreground: 210 40% 98%;
+    
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
+    
     --success: 158 64% 52%;
     --success-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    
+    --border: 225 25% 26%;
+    --input: 225 25% 26%;
+    --ring: 252 83% 74%;
     --radius: 0.75rem;
   }
 }
@@ -36,4 +45,24 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Glass effect for cards */
+.glass-card {
+  @apply bg-card/80 backdrop-blur-sm border border-white/10;
+}
+
+/* Gradient animations */
+.gradient-border {
+  @apply relative rounded-lg p-[1px] bg-gradient-to-r from-primary/50 to-accent/50 hover:from-primary hover:to-accent transition-all duration-300;
+}
+
+/* Hover effects */
+.hover-scale {
+  @apply transition-transform duration-200 hover:scale-[1.02];
+}
+
+/* Fade in animation */
+.fade-in {
+  @apply animate-fade-in;
 }
