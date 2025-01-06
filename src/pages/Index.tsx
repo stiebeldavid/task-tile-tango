@@ -3,10 +3,11 @@ import { ProjectGrid } from "@/components/ProjectGrid";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ProjectHeader } from "@/components/ProjectHeader";
 import { EmptyProjectsCard } from "@/components/EmptyProjectsCard";
 import { useProjects } from "@/hooks/useProjects";
+import { useTasks } from "@/hooks/useTasks";
+import { useProjectPositions } from "@/hooks/useProjectPositions";
 import { DeepWorkModal } from "@/components/DeepWorkModal";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
@@ -14,109 +15,13 @@ import { Play } from "lucide-react";
 const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [newProjectTitle, setNewProjectTitle] = useState("");
   const [isDeepWorkModalOpen, setIsDeepWorkModalOpen] = useState(false);
   
   const { projects, isLoading, createProject, updateProject, deleteProject } = useProjects();
-
-  const updateTaskMutation = useMutation({
-    mutationFn: async ({ projectId, taskId, completed }: { projectId: string; taskId: string; completed: boolean }) => {
-      const { error } = await supabase
-        .from('tasks')
-        .update({ completed })
-        .eq('id', parseInt(taskId));
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-    },
-  });
-
-  const createTaskMutation = useMutation({
-    mutationFn: async ({ projectId, content }: { projectId: string, content: string }) => {
-      const { error } = await supabase
-        .from('tasks')
-        .insert({
-          project_id: parseInt(projectId),
-          content,
-          completed: false,
-          position: projects.find(p => p.id === projectId)?.tasks.length || 0
-        });
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      toast({
-        title: "Success",
-        description: "Task added successfully",
-      });
-    },
-  });
-
-  const updateTaskContentMutation = useMutation({
-    mutationFn: async ({ taskId, content }: { taskId: string, content: string }) => {
-      const { error } = await supabase
-        .from('tasks')
-        .update({ content })
-        .eq('id', parseInt(taskId));
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      toast({
-        title: "Success",
-        description: "Task updated successfully",
-      });
-    },
-  });
-
-  const updateProjectPositionMutation = useMutation({
-    mutationFn: async (updatedProjects: any[]) => {
-      // Update each project's position individually
-      const updatePromises = updatedProjects.map((project, index) => 
-        supabase
-          .from('projects')
-          .update({ position: index })
-          .eq('id', parseInt(project.id))
-      );
-
-      await Promise.all(updatePromises);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-    },
-  });
-
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return;
-
-    const items = Array.from(projects);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    updateProjectPositionMutation.mutate(items);
-    toast({
-      title: "Project reordered",
-      description: "The project has been moved to a new position.",
-    });
-  };
-
-  const handleTaskToggle = (projectId: string, taskId: string) => {
-    const project = projects.find(p => p.id === projectId);
-    const task = project?.tasks.find(t => t.id === taskId);
-    if (task) {
-      updateTaskMutation.mutate({
-        projectId,
-        taskId,
-        completed: !task.completed,
-      });
-    }
-  };
+  const { updateTask, createTask, updateTaskContent } = useTasks();
+  const { updateProjectPositions } = useProjectPositions();
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -129,6 +34,16 @@ const Index = () => {
     } else {
       navigate("/auth");
     }
+  };
+
+  const handleDragEnd = (result: any) => {
+    if (!result.destination) return;
+
+    const items = Array.from(projects);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    updateProjectPositions(items);
   };
 
   const handleCreateProject = () => {
@@ -166,10 +81,20 @@ const Index = () => {
           <ProjectGrid
             projects={projects}
             onDragEnd={handleDragEnd}
-            onTaskToggle={handleTaskToggle}
+            onTaskToggle={(projectId, taskId) => {
+              const project = projects.find(p => p.id === projectId);
+              const task = project?.tasks.find(t => t.id === taskId);
+              if (task) {
+                updateTask({
+                  projectId,
+                  taskId,
+                  completed: !task.completed,
+                });
+              }
+            }}
             onProjectEdit={(id, title) => updateProject({ id, title })}
-            onTaskAdd={(projectId, content) => createTaskMutation.mutate({ projectId, content })}
-            onTaskEdit={(projectId, taskId, content) => updateTaskContentMutation.mutate({ taskId, content })}
+            onTaskAdd={(projectId, content) => createTask({ projectId, content })}
+            onTaskEdit={(projectId, taskId, content) => updateTaskContent({ taskId, content })}
             onProjectDelete={deleteProject}
             isAddingProject={isAddingProject}
             newProjectTitle={newProjectTitle}
