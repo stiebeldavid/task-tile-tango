@@ -92,7 +92,7 @@ export const DeepWorkModal = ({ isOpen, onClose, projects }: DeepWorkModalProps)
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {step === 'project' ? 'Select Tasks for Deep Work Session' : 'Set Duration'}
+            {step === 'project' ? 'Select Tasks for Deep Work Session' : 'Set Duration for Deep Work'}
           </DialogTitle>
         </DialogHeader>
 
