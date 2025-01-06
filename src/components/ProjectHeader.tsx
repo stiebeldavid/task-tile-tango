@@ -1,23 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { LogOut, Plus } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProjectHeaderProps {
-  isAddingProject: boolean;
-  newProjectTitle: string;
-  onNewProjectTitleChange: (value: string) => void;
-  onCreateProject: () => void;
-  onAddProjectClick: () => void;
   onSignOut: () => void;
 }
 
 export const ProjectHeader = ({
-  isAddingProject,
-  newProjectTitle,
-  onNewProjectTitleChange,
-  onCreateProject,
-  onAddProjectClick,
   onSignOut,
 }: ProjectHeaderProps) => {
   const isMobile = useIsMobile();
@@ -32,32 +21,7 @@ export const ProjectHeader = ({
             </h1>
             <p className="text-muted-foreground mt-2">Get Stuff Done</p>
           </div>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            {isAddingProject ? (
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <Input
-                  placeholder="Enter project title..."
-                  value={newProjectTitle}
-                  onChange={(e) => onNewProjectTitleChange(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && onCreateProject()}
-                  className="bg-background/50"
-                />
-                <Button 
-                  onClick={onCreateProject}
-                  className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
-                >
-                  Add
-                </Button>
-              </div>
-            ) : (
-              <Button 
-                onClick={onAddProjectClick}
-                className="bg-primary/20 hover:bg-primary/40 text-primary-foreground group"
-              >
-                <Plus className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                {isMobile ? "New" : "New Project"}
-              </Button>
-            )}
+          <div>
             <Button 
               variant="outline" 
               onClick={onSignOut}

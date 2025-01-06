@@ -141,14 +141,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <ProjectHeader
-        isAddingProject={isAddingProject}
-        newProjectTitle={newProjectTitle}
-        onNewProjectTitleChange={setNewProjectTitle}
-        onCreateProject={handleCreateProject}
-        onAddProjectClick={() => setIsAddingProject(true)}
-        onSignOut={handleSignOut}
-      />
+      <ProjectHeader onSignOut={handleSignOut} />
       <main className="container mx-auto">
         {projects.length === 0 ? (
           <div className="p-6">
@@ -163,6 +156,11 @@ const Index = () => {
             onTaskAdd={(projectId, content) => createTaskMutation.mutate({ projectId, content })}
             onTaskEdit={(projectId, taskId, content) => updateTaskContentMutation.mutate({ taskId, content })}
             onProjectDelete={deleteProject}
+            isAddingProject={isAddingProject}
+            newProjectTitle={newProjectTitle}
+            onNewProjectTitleChange={setNewProjectTitle}
+            onCreateProject={handleCreateProject}
+            onAddProjectClick={() => setIsAddingProject(true)}
           />
         )}
       </main>

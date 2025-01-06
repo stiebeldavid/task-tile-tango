@@ -1,5 +1,9 @@
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import { ProjectCard } from "./ProjectCard";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Plus } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Project {
   id: string;
@@ -21,6 +25,11 @@ interface ProjectGridProps {
   onTaskAdd?: (projectId: string, content: string) => void;
   onTaskEdit?: (projectId: string, taskId: string, content: string) => void;
   onProjectDelete?: (id: string) => void;
+  isAddingProject: boolean;
+  newProjectTitle: string;
+  onNewProjectTitleChange: (value: string) => void;
+  onCreateProject: () => void;
+  onAddProjectClick: () => void;
 }
 
 export const ProjectGrid = ({ 
@@ -30,37 +39,73 @@ export const ProjectGrid = ({
   onProjectEdit,
   onTaskAdd,
   onTaskEdit,
-  onProjectDelete
+  onProjectDelete,
+  isAddingProject,
+  newProjectTitle,
+  onNewProjectTitleChange,
+  onCreateProject,
+  onAddProjectClick,
 }: ProjectGridProps) => {
+  const isMobile = useIsMobile();
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="projects" direction="horizontal">
-        {(provided) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6"
-          >
-            {projects.map((project, index) => (
-              <ProjectCard
-                key={project.id}
-                id={project.id}
-                index={index}
-                title={project.title}
-                description={project.description}
-                tags={project.tags}
-                tasks={project.tasks}
-                onTaskToggle={(taskId) => onTaskToggle(project.id, taskId)}
-                onProjectEdit={onProjectEdit}
-                onTaskAdd={onTaskAdd}
-                onTaskEdit={onTaskEdit}
-                onProjectDelete={onProjectDelete}
+      <div className="p-6">
+        <div className="mb-6">
+          {isAddingProject ? (
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center max-w-md">
+              <Input
+                placeholder="Enter project title..."
+                value={newProjectTitle}
+                onChange={(e) => onNewProjectTitleChange(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && onCreateProject()}
+                className="bg-background/50"
               />
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
+              <Button 
+                onClick={onCreateProject}
+                className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
+              >
+                Add
+              </Button>
+            </div>
+          ) : (
+            <Button 
+              onClick={onAddProjectClick}
+              className="bg-primary/20 hover:bg-primary/40 text-primary-foreground group"
+            >
+              <Plus className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+              {isMobile ? "New" : "New Project"}
+            </Button>
+          )}
+        </div>
+        <Droppable droppableId="projects" direction="horizontal">
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {projects.map((project, index) => (
+                <ProjectCard
+                  key={project.id}
+                  id={project.id}
+                  index={index}
+                  title={project.title}
+                  description={project.description}
+                  tags={project.tags}
+                  tasks={project.tasks}
+                  onTaskToggle={(taskId) => onTaskToggle(project.id, taskId)}
+                  onProjectEdit={onProjectEdit}
+                  onTaskAdd={onTaskAdd}
+                  onTaskEdit={onTaskEdit}
+                  onProjectDelete={onProjectDelete}
+                />
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </div>
     </DragDropContext>
   );
 };
