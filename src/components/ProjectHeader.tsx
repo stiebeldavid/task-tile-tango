@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LogOut, Plus } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProjectHeaderProps {
   isAddingProject: boolean;
@@ -19,49 +20,53 @@ export const ProjectHeader = ({
   onAddProjectClick,
   onSignOut,
 }: ProjectHeaderProps) => {
+  const isMobile = useIsMobile();
+
   return (
     <header className="border-b border-border/50 bg-background/95 backdrop-blur-sm sticky top-0 z-10">
-      <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Daily Deep Work
-          </h1>
-          <p className="text-muted-foreground mt-2">Get Stuff Done</p>
-        </div>
-        <div className="flex items-center gap-4">
-          {isAddingProject ? (
-            <div className="flex gap-2">
-              <Input
-                placeholder="Enter project title..."
-                value={newProjectTitle}
-                onChange={(e) => onNewProjectTitleChange(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && onCreateProject()}
-                className="bg-background/50"
-              />
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex flex-col gap-6 md:flex-row md:justify-between md:items-center">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Daily Deep Work
+            </h1>
+            <p className="text-muted-foreground mt-2">Get Stuff Done</p>
+          </div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            {isAddingProject ? (
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Input
+                  placeholder="Enter project title..."
+                  value={newProjectTitle}
+                  onChange={(e) => onNewProjectTitleChange(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && onCreateProject()}
+                  className="bg-background/50"
+                />
+                <Button 
+                  onClick={onCreateProject}
+                  className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
+                >
+                  Add
+                </Button>
+              </div>
+            ) : (
               <Button 
-                onClick={onCreateProject}
-                className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
+                onClick={onAddProjectClick}
+                className="bg-primary/20 hover:bg-primary/40 text-primary-foreground group"
               >
-                Add
+                <Plus className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                {isMobile ? "New" : "New Project"}
               </Button>
-            </div>
-          ) : (
+            )}
             <Button 
-              onClick={onAddProjectClick}
-              className="bg-primary/20 hover:bg-primary/40 text-primary-foreground group"
+              variant="outline" 
+              onClick={onSignOut}
+              className="border-border/50 hover:bg-destructive/20 hover:text-destructive-foreground transition-colors"
             >
-              <Plus className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-              New Project
+              <LogOut className="h-4 w-4 mr-2" />
+              {isMobile ? "Exit" : "Sign Out"}
             </Button>
-          )}
-          <Button 
-            variant="outline" 
-            onClick={onSignOut}
-            className="border-border/50 hover:bg-destructive/20 hover:text-destructive-foreground transition-colors"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
-          </Button>
+          </div>
         </div>
       </div>
     </header>
