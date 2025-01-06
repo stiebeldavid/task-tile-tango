@@ -11,6 +11,7 @@ import { useProjectPositions } from "@/hooks/useProjectPositions";
 import { DeepWorkModal } from "@/components/DeepWorkModal";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
+import { InfoModal } from "@/components/InfoModal";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -61,7 +62,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <ProjectHeader onSignOut={handleSignOut} />
-      <main className="container mx-auto pb-24"> {/* Added padding bottom to prevent button overlap */}
+      <InfoModal />
+      <main className="container mx-auto pb-24">
         {projects.length === 0 ? (
           <div className="p-6">
             <EmptyProjectsCard onAddProject={() => setIsAddingProject(true)} />
