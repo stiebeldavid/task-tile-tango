@@ -96,7 +96,7 @@ const Index = () => {
               </p>
               <Button 
                 size="lg" 
-                onClick={() => navigate("/auth?mode=sign_up")}
+                onClick={() => navigate("/auth")}
                 className="group px-8 py-6 text-lg"
               >
                 Get Started Free
