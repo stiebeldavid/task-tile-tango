@@ -18,8 +18,9 @@ export const InfoModal = () => {
       <DialogContent className="sm:max-w-[500px] glass-card">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Welcome to Deep Work
+            DailyDeepWork.com
           </DialogTitle>
+          <p className="text-lg text-muted-foreground mt-1">How It Works</p>
         </DialogHeader>
         <div className="space-y-6 py-4">
           <div className="space-y-2">
