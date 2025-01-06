@@ -54,11 +54,11 @@ export const useProjects = () => {
 
       const { data, error } = await supabase
         .from('projects')
-        .insert([{ 
+        .insert({
           title,
-          user_id: userData.user.id,
-          position: projects.length 
-        }])
+          user_id: parseInt(userData.user.id),
+          position: projects.length
+        })
         .select()
         .single();
 
@@ -79,7 +79,7 @@ export const useProjects = () => {
       const { error } = await supabase
         .from('projects')
         .update({ title })
-        .eq('id', id);
+        .eq('id', parseInt(id));
 
       if (error) throw error;
     },
@@ -97,7 +97,7 @@ export const useProjects = () => {
       const { error } = await supabase
         .from('projects')
         .delete()
-        .eq('id', id);
+        .eq('id', parseInt(id));
 
       if (error) throw error;
     },

@@ -22,7 +22,7 @@ const Index = () => {
       const { error } = await supabase
         .from('tasks')
         .update({ completed })
-        .eq('id', taskId);
+        .eq('id', parseInt(taskId));
 
       if (error) throw error;
     },
@@ -35,12 +35,12 @@ const Index = () => {
     mutationFn: async ({ projectId, content }: { projectId: string, content: string }) => {
       const { error } = await supabase
         .from('tasks')
-        .insert([{ 
-          project_id: projectId,
+        .insert({
+          project_id: parseInt(projectId),
           content,
           completed: false,
           position: projects.find(p => p.id === projectId)?.tasks.length || 0
-        }]);
+        });
 
       if (error) throw error;
     },
@@ -58,7 +58,7 @@ const Index = () => {
       const { error } = await supabase
         .from('tasks')
         .update({ content })
-        .eq('id', taskId);
+        .eq('id', parseInt(taskId));
 
       if (error) throw error;
     },
