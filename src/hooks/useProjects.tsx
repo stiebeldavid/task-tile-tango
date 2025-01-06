@@ -51,15 +51,12 @@ export const useProjects = () => {
     mutationFn: async (title: string) => {
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError || !userData.user) throw new Error("Not authenticated");
-
-      // Convert the UUID to a number that can be stored as int8
-      const userId = parseInt(userData.user.id, 16);
       
       const { data, error } = await supabase
         .from('projects')
         .insert({
           title,
-          user_id: userId,
+          User_UID: userData.user.id, // Using User_UID directly with the UUID from auth
           position: projects.length
         })
         .select()
