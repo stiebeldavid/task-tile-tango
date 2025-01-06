@@ -24,9 +24,9 @@ export const ProjectHeader = ({
       <div className="container mx-auto px-4 py-6 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            My Projects
+            Daily Deep Work
           </h1>
-          <p className="text-muted-foreground mt-2">Manage your personal and work projects</p>
+          <p className="text-muted-foreground mt-2">Get Stuff Done</p>
         </div>
         <div className="flex items-center gap-4">
           {isAddingProject ? (
