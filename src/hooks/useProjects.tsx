@@ -52,8 +52,8 @@ export const useProjects = () => {
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError || !userData.user) throw new Error("Not authenticated");
 
-      // Get the numeric user ID from the auth ID
-      const userId = BigInt(userData.user.id);
+      // Convert the UUID to a number that can be stored as int8
+      const userId = parseInt(userData.user.id, 16);
       
       const { data, error } = await supabase
         .from('projects')
