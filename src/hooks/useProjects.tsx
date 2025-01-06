@@ -49,20 +49,26 @@ export const useProjects = () => {
 
   const createProjectMutation = useMutation({
     mutationFn: async (title: string) => {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) throw new Error("Not authenticated");
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData.user) throw new Error("Not authenticated");
 
+      // Get the numeric user ID from the auth ID
+      const userId = BigInt(userData.user.id);
+      
       const { data, error } = await supabase
         .from('projects')
         .insert({
           title,
-          user_id: parseInt(userData.user.id),
+          user_id: userId,
           position: projects.length
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error creating project:", error);
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {
@@ -70,6 +76,14 @@ export const useProjects = () => {
       toast({
         title: "Success",
         description: "Project created successfully",
+      });
+    },
+    onError: (error) => {
+      console.error("Project creation error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create project. Please try again.",
+        variant: "destructive",
       });
     },
   });
