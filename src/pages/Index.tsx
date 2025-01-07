@@ -10,11 +10,12 @@ import { useTasks } from "@/hooks/useTasks";
 import { useProjectPositions } from "@/hooks/useProjectPositions";
 import { DeepWorkModal } from "@/components/DeepWorkModal";
 import { Button } from "@/components/ui/button";
-import { Play, ArrowRight, CheckCircle2, Brain, Rocket } from "lucide-react";
+import { Play, ArrowRight } from "lucide-react";
 import { InfoModal } from "@/components/InfoModal";
 import { Session } from "@supabase/supabase-js";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
+import { FeaturesSection } from "@/components/FeaturesSection";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -81,61 +82,61 @@ const Index = () => {
   };
 
   if (session) {
-  return (
-    <div className="min-h-screen bg-background">
-      <ProjectHeader onSignOut={handleSignOut} />
-      <InfoModal />
-      <main className="container mx-auto pb-24">
-        {projects.length === 0 ? (
-          <div className="p-6">
-            <EmptyProjectsCard onAddProject={() => setIsAddingProject(true)} />
+    return (
+      <div className="min-h-screen bg-background">
+        <ProjectHeader onSignOut={handleSignOut} />
+        <InfoModal />
+        <main className="container mx-auto pb-24">
+          {projects.length === 0 ? (
+            <div className="p-6">
+              <EmptyProjectsCard onAddProject={() => setIsAddingProject(true)} />
+            </div>
+          ) : (
+            <ProjectGrid
+              projects={projects}
+              onDragEnd={handleDragEnd}
+              onTaskToggle={(projectId, taskId) => {
+                const project = projects.find(p => p.id === projectId);
+                const task = project?.tasks.find(t => t.id === taskId);
+                if (task) {
+                  updateTask({
+                    projectId,
+                    taskId,
+                    completed: !task.completed,
+                  });
+                }
+              }}
+              onProjectEdit={(id, title) => updateProject({ id, title })}
+              onTaskAdd={(projectId, content) => createTask({ projectId, content })}
+              onTaskEdit={(projectId, taskId, content) => updateTaskContent({ taskId, content })}
+              onProjectDelete={deleteProject}
+              isAddingProject={isAddingProject}
+              newProjectTitle={newProjectTitle}
+              onNewProjectTitleChange={setNewProjectTitle}
+              onCreateProject={handleCreateProject}
+              onAddProjectClick={() => setIsAddingProject(true)}
+            />
+          )}
+
+          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+            <Button
+              size="lg"
+              onClick={() => setIsDeepWorkModalOpen(true)}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all group px-8 py-6"
+            >
+              <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+              Start Deep Work
+            </Button>
           </div>
-        ) : (
-          <ProjectGrid
+
+          <DeepWorkModal
+            isOpen={isDeepWorkModalOpen}
+            onClose={() => setIsDeepWorkModalOpen(false)}
             projects={projects}
-            onDragEnd={handleDragEnd}
-            onTaskToggle={(projectId, taskId) => {
-              const project = projects.find(p => p.id === projectId);
-              const task = project?.tasks.find(t => t.id === taskId);
-              if (task) {
-                updateTask({
-                  projectId,
-                  taskId,
-                  completed: !task.completed,
-                });
-              }
-            }}
-            onProjectEdit={(id, title) => updateProject({ id, title })}
-            onTaskAdd={(projectId, content) => createTask({ projectId, content })}
-            onTaskEdit={(projectId, taskId, content) => updateTaskContent({ taskId, content })}
-            onProjectDelete={deleteProject}
-            isAddingProject={isAddingProject}
-            newProjectTitle={newProjectTitle}
-            onNewProjectTitleChange={setNewProjectTitle}
-            onCreateProject={handleCreateProject}
-            onAddProjectClick={() => setIsAddingProject(true)}
           />
-        )}
-
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-          <Button
-            size="lg"
-            onClick={() => setIsDeepWorkModalOpen(true)}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all group px-8 py-6"
-          >
-            <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-            Start Deep Work
-          </Button>
-        </div>
-
-        <DeepWorkModal
-          isOpen={isDeepWorkModalOpen}
-          onClose={() => setIsDeepWorkModalOpen(false)}
-          projects={projects}
-        />
-      </main>
-    </div>
-  );
+        </main>
+      </div>
+    );
   }
 
   return (
@@ -172,39 +173,7 @@ const Index = () => {
         </section>
 
         {/* Features Section */}
-        <section className="container mx-auto px-4 py-24">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="glass-card p-6 space-y-4 hover-scale">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Brain className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold">Focus Intensely</h3>
-              <p className="text-muted-foreground">
-                Eliminate distractions and enter a state of deep focus with timed work sessions.
-              </p>
-            </div>
-
-            <div className="glass-card p-6 space-y-4 hover-scale">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <CheckCircle2 className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold">Track Progress</h3>
-              <p className="text-muted-foreground">
-                Organize tasks, monitor completion, and celebrate your achievements.
-              </p>
-            </div>
-
-            <div className="glass-card p-6 space-y-4 hover-scale">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Rocket className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold">Boost Productivity</h3>
-              <p className="text-muted-foreground">
-                Accomplish more in less time with structured deep work sessions.
-              </p>
-            </div>
-          </div>
-        </section>
+        <FeaturesSection />
 
         {/* Auth Section */}
         <section ref={authRef} className="container mx-auto px-4 py-24">
