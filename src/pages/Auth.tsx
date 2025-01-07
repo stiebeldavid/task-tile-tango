@@ -18,6 +18,10 @@ const AuthPage = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  const toggleView = () => {
+    setView(view === "sign_in" ? "sign_up" : "sign_in");
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="w-full max-w-md p-6 glass-card">
@@ -30,6 +34,17 @@ const AuthPage = () => {
           theme="dark"
           providers={[]}
           view={view}
+          localization={{
+            variables: {
+              sign_in: {
+                link_text: "Already have an account? Sign in",
+              },
+              sign_up: {
+                link_text: "Don't have an account? Sign up",
+              },
+            },
+          }}
+          onViewChange={({ view }) => setView(view as "sign_in" | "sign_up")}
         />
       </div>
     </div>
