@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ProjectLoadingSkeleton } from "./ProjectLoadingSkeleton";
 
 interface Project {
   id: string;
@@ -31,9 +30,6 @@ interface ProjectGridProps {
   onNewProjectTitleChange: (value: string) => void;
   onCreateProject: () => void;
   onAddProjectClick: () => void;
-  isLoading?: boolean;
-  isLoadingDetails?: boolean;
-  projectsBasic?: Project[];
 }
 
 export const ProjectGrid = ({ 
@@ -49,15 +45,8 @@ export const ProjectGrid = ({
   onNewProjectTitleChange,
   onCreateProject,
   onAddProjectClick,
-  isLoading,
-  isLoadingDetails,
-  projectsBasic = [],
 }: ProjectGridProps) => {
   const isMobile = useIsMobile();
-
-  if (isLoading) {
-    return <ProjectLoadingSkeleton />;
-  }
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -96,7 +85,7 @@ export const ProjectGrid = ({
               {...provided.droppableProps}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
-              {(isLoadingDetails ? projectsBasic : projects).map((project, index) => (
+              {projects.map((project, index) => (
                 <ProjectCard
                   key={project.id}
                   id={project.id}
@@ -110,7 +99,6 @@ export const ProjectGrid = ({
                   onTaskAdd={onTaskAdd}
                   onTaskEdit={onTaskEdit}
                   onProjectDelete={onProjectDelete}
-                  isLoadingDetails={isLoadingDetails}
                 />
               ))}
               {provided.placeholder}
