@@ -1,23 +1,49 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 export const useProjects = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: projects = [], isLoading } = useQuery({
-    queryKey: ['projects'],
+  // Listen for auth changes to clear cache
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        queryClient.clear(); // Clear all queries on logout
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [queryClient]);
+
+  // First stage: Fetch basic project info
+  const { data: projectsBasic = [], isLoading: isLoadingBasic } = useQuery({
+    queryKey: ['projects-basic'],
     queryFn: async () => {
       const { data: projectsData, error: projectsError } = await supabase
         .from('projects')
-        .select('*')
+        .select('id, title, description, position')
         .order('position');
 
       if (projectsError) throw projectsError;
+      return projectsData.map(project => ({
+        id: project.id.toString(),
+        title: project.title,
+        description: project.description,
+        tags: [],
+        tasks: [],
+      }));
+    },
+  });
 
+  // Second stage: Fetch full project details
+  const { data: projects = [], isLoading: isLoadingDetails } = useQuery({
+    queryKey: ['projects-full'],
+    queryFn: async () => {
       const projectsWithDetails = await Promise.all(
-        projectsData.map(async (project) => {
+        projectsBasic.map(async (project) => {
           const { data: tasks } = await supabase
             .from('tasks')
             .select('*')
@@ -30,9 +56,7 @@ export const useProjects = () => {
             .eq('project_id', project.id);
 
           return {
-            id: project.id.toString(),
-            title: project.title,
-            description: project.description,
+            ...project,
             tags: projectTags?.map((pt: any) => pt.tags.name) || [],
             tasks: tasks?.map((task: any) => ({
               id: task.id.toString(),
@@ -45,6 +69,7 @@ export const useProjects = () => {
 
       return projectsWithDetails;
     },
+    enabled: projectsBasic.length > 0, // Only run if we have basic project data
   });
 
   const createProjectMutation = useMutation({
@@ -123,7 +148,9 @@ export const useProjects = () => {
 
   return {
     projects,
-    isLoading,
+    isLoading: isLoadingBasic || isLoadingDetails,
+    isLoadingDetails,
+    projectsBasic,
     createProject: createProjectMutation.mutate,
     updateProject: updateProjectMutation.mutate,
     deleteProject: deleteProjectMutation.mutate,

@@ -6,6 +6,7 @@ import { GripVertical, Tag, PenLine, Plus, Trash2 } from "lucide-react";
 import { Draggable } from "@hello-pangea/dnd";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Task {
   id: string;
@@ -25,6 +26,7 @@ interface ProjectCardProps {
   onTaskAdd?: (projectId: string, taskContent: string) => void;
   onTaskEdit?: (projectId: string, taskId: string, newContent: string) => void;
   onProjectDelete?: (id: string) => void;
+  isLoadingDetails?: boolean;
 }
 
 export const ProjectCard = ({ 
@@ -38,7 +40,8 @@ export const ProjectCard = ({
   onProjectEdit,
   onTaskAdd,
   onTaskEdit,
-  onProjectDelete
+  onProjectDelete,
+  isLoadingDetails = false,
 }: ProjectCardProps) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
@@ -127,95 +130,114 @@ export const ProjectCard = ({
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {tags.map((tag) => (
-                  <Badge 
-                    key={tag} 
-                    variant="secondary" 
-                    className="flex items-center gap-1 bg-secondary/50 hover:bg-secondary/70 transition-colors"
-                  >
-                    <Tag className="h-3 w-3" />
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-              <div className="space-y-2">
-                {tasks.map((task) => (
-                  <div key={task.id} className="flex items-center space-x-2 group">
-                    <Checkbox
-                      checked={task.completed}
-                      onCheckedChange={() => onTaskToggle(task.id)}
-                      className="border-primary/50 data-[state=checked]:bg-primary/50"
-                    />
-                    {editingTaskId === task.id ? (
-                      <div className="flex gap-2 flex-1">
+              {isLoadingDetails ? (
+                <div className="space-y-2 animate-pulse">
+                  <div className="flex gap-2 mb-4">
+                    <Skeleton className="h-5 w-16" />
+                    <Skeleton className="h-5 w-16" />
+                  </div>
+                  <div className="space-y-2">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex items-center space-x-2">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 flex-1" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {tags.map((tag) => (
+                      <Badge 
+                        key={tag} 
+                        variant="secondary" 
+                        className="flex items-center gap-1 bg-secondary/50 hover:bg-secondary/70 transition-colors"
+                      >
+                        <Tag className="h-3 w-3" />
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                  <div className="space-y-2">
+                    {tasks.map((task) => (
+                      <div key={task.id} className="flex items-center space-x-2 group">
+                        <Checkbox
+                          checked={task.completed}
+                          onCheckedChange={() => onTaskToggle(task.id)}
+                          className="border-primary/50 data-[state=checked]:bg-primary/50"
+                        />
+                        {editingTaskId === task.id ? (
+                          <div className="flex gap-2 flex-1">
+                            <Input
+                              value={editedTaskContent}
+                              onChange={(e) => setEditedTaskContent(e.target.value)}
+                              onKeyPress={(e) => e.key === 'Enter' && handleTaskEdit(task.id)}
+                              className="bg-background/50"
+                            />
+                            <Button 
+                              size="sm" 
+                              onClick={() => handleTaskEdit(task.id)}
+                              className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
+                            >
+                              Save
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex justify-between items-center flex-1">
+                            <span className={`text-sm ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                              {task.content}
+                            </span>
+                            {onTaskEdit && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setEditingTaskId(task.id);
+                                  setEditedTaskContent(task.content);
+                                }}
+                                className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary/20"
+                              >
+                                <PenLine className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {isAddingTask ? (
+                      <div className="flex gap-2 mt-2">
                         <Input
-                          value={editedTaskContent}
-                          onChange={(e) => setEditedTaskContent(e.target.value)}
-                          onKeyPress={(e) => e.key === 'Enter' && handleTaskEdit(task.id)}
+                          placeholder="Enter new task..."
+                          value={newTaskContent}
+                          onChange={(e) => setNewTaskContent(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && handleTaskAdd()}
                           className="bg-background/50"
                         />
                         <Button 
                           size="sm" 
-                          onClick={() => handleTaskEdit(task.id)}
+                          onClick={handleTaskAdd}
                           className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
                         >
-                          Save
+                          Add
                         </Button>
                       </div>
                     ) : (
-                      <div className="flex justify-between items-center flex-1">
-                        <span className={`text-sm ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
-                          {task.content}
-                        </span>
-                        {onTaskEdit && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setEditingTaskId(task.id);
-                              setEditedTaskContent(task.content);
-                            }}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary/20"
-                          >
-                            <PenLine className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
+                      onTaskAdd && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="mt-2 w-full justify-start hover:bg-primary/20 group"
+                          onClick={() => setIsAddingTask(true)}
+                        >
+                          <Plus className="h-4 w-4 mr-2 group-hover:text-primary transition-colors" />
+                          Add Task
+                        </Button>
+                      )
                     )}
                   </div>
-                ))}
-                {isAddingTask ? (
-                  <div className="flex gap-2 mt-2">
-                    <Input
-                      placeholder="Enter new task..."
-                      value={newTaskContent}
-                      onChange={(e) => setNewTaskContent(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleTaskAdd()}
-                      className="bg-background/50"
-                    />
-                    <Button 
-                      size="sm" 
-                      onClick={handleTaskAdd}
-                      className="bg-primary/20 hover:bg-primary/40 text-primary-foreground"
-                    >
-                      Add
-                    </Button>
-                  </div>
-                ) : (
-                  onTaskAdd && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="mt-2 w-full justify-start hover:bg-primary/20 group"
-                      onClick={() => setIsAddingTask(true)}
-                    >
-                      <Plus className="h-4 w-4 mr-2 group-hover:text-primary transition-colors" />
-                      Add Task
-                    </Button>
-                  )
-                )}
-              </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
