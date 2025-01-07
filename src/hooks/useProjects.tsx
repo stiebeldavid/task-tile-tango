@@ -47,13 +47,13 @@ export const useProjects = () => {
           const { data: tasks } = await supabase
             .from('tasks')
             .select('*')
-            .eq('project_id', project.id)
+            .eq('project_id', parseInt(project.id))
             .order('position');
 
           const { data: projectTags } = await supabase
             .from('project_tags')
             .select('tags(name)')
-            .eq('project_id', project.id);
+            .eq('project_id', parseInt(project.id));
 
           return {
             ...project,
@@ -81,7 +81,7 @@ export const useProjects = () => {
         .from('projects')
         .insert({
           title,
-          User_UID: userData.user.id, // Using User_UID directly with the UUID from auth
+          User_UID: userData.user.id,
           position: projects.length
         })
         .select()

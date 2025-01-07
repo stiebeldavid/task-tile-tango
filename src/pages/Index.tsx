@@ -25,6 +25,7 @@ const Index = () => {
   const [isDeepWorkModalOpen, setIsDeepWorkModalOpen] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [view, setView] = useState<"sign_in" | "sign_up">("sign_in");
+  const [authError, setAuthError] = useState<AuthError | null>(null);
   const authRef = useRef<HTMLDivElement>(null);
   
   const { projects, isLoading, createProject, updateProject, deleteProject } = useProjects();
@@ -38,8 +39,11 @@ const Index = () => {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
+      if (event === 'SIGNED_IN') {
+        setAuthError(null); // Clear any previous errors on successful sign in
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -155,7 +159,9 @@ const Index = () => {
         <section className="container mx-auto px-4 py-24 flex flex-col items-center text-center">
           <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
             <h1 className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Master Deep Work, Achieve More
+              Master Deep Work
+              <br />
+              Get stuff done, and accomplish your goals
             </h1>
             <p className="text-xl text-muted-foreground">
               Transform your productivity with focused deep work sessions. 
@@ -181,12 +187,14 @@ const Index = () => {
             <h2 className="text-2xl font-bold text-center">
               {view === "sign_in" ? "Log in to your account" : "Create a new account"}
             </h2>
+            <AuthError error={authError} />
             <Auth
               supabaseClient={supabase}
               appearance={{ theme: ThemeSupa }}
               theme="dark"
               providers={[]}
               view={view}
+              onError={(error) => setAuthError(error)}
               localization={{
                 variables: {
                   sign_in: {
