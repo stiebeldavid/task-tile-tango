@@ -155,11 +155,10 @@ const Index = () => {
         <section className="container mx-auto px-4 py-24 flex flex-col items-center text-center">
           <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
             <h1 className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Transform your productivity with focused deep work sessions.
-              <br />
-              Get stuff done, and accomplish your goals.
+              Master Deep Work, Achieve More
             </h1>
             <p className="text-xl text-muted-foreground">
+              Transform your productivity with focused deep work sessions. 
               Organize projects, track tasks, and accomplish your goals.
             </p>
             <Button 
