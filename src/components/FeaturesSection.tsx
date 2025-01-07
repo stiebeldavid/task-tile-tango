@@ -1,4 +1,4 @@
-import { Brain, CheckCircle2, Rocket, Magic } from "lucide-react";
+import { Brain, CheckCircle2, Rocket, Wand2 } from "lucide-react";
 
 export const FeaturesSection = () => {
   return (
@@ -26,7 +26,7 @@ export const FeaturesSection = () => {
 
         <div className="glass-card p-6 space-y-4 hover-scale">
           <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <Magic className="h-6 w-6 text-primary" />
+            <Wand2 className="h-6 w-6 text-primary" />
           </div>
           <h3 className="text-xl font-semibold">Smart Automation</h3>
           <p className="text-muted-foreground">
