@@ -66,19 +66,14 @@ const Index = () => {
     updateProjectPositions(items);
   };
 
-  const handleCreateProject = () => {
-    if (newProjectTitle.trim()) {
-      createProject(newProjectTitle);
-      setIsAddingProject(false);
-      setNewProjectTitle("");
+  const handleCreateProject = (title: string) => {
+    if (title.trim()) {
+      createProject(title);
+      toast({
+        title: "Success",
+        description: "Project created successfully",
+      });
     }
-  };
-
-  const scrollToAuth = (signUpMode = false) => {
-    if (signUpMode) {
-      setView("sign_up");
-    }
-    authRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   if (session) {
@@ -89,7 +84,7 @@ const Index = () => {
         <main className="container mx-auto pb-24">
           {projects.length === 0 ? (
             <div className="p-6">
-              <EmptyProjectsCard onAddProject={() => setIsAddingProject(true)} />
+              <EmptyProjectsCard onAddProject={handleCreateProject} />
             </div>
           ) : (
             <ProjectGrid
@@ -110,11 +105,11 @@ const Index = () => {
               onTaskAdd={(projectId, content) => createTask({ projectId, content })}
               onTaskEdit={(projectId, taskId, content) => updateTaskContent({ taskId, content })}
               onProjectDelete={deleteProject}
-              isAddingProject={isAddingProject}
-              newProjectTitle={newProjectTitle}
-              onNewProjectTitleChange={setNewProjectTitle}
-              onCreateProject={handleCreateProject}
-              onAddProjectClick={() => setIsAddingProject(true)}
+              isAddingProject={false}
+              newProjectTitle=""
+              onNewProjectTitleChange={() => {}}
+              onCreateProject={() => {}}
+              onAddProjectClick={() => {}}
             />
           )}
 
